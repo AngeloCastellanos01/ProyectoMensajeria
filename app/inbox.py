@@ -66,7 +66,7 @@ def send():
                 'select * from user where id = ?',
                 (g.user['id'], userto['id'], subject, body)
             )##Modificado
-            db.commit()
+            db.commit() 
 
             return redirect(url_for('inbox.show'))
 
