@@ -16,7 +16,7 @@ from app.db import get_db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-@bp.route('/activate', methods=('GET', 'POST'))
+@bp.route('/activate', methods=(['GET'], ['POST']))
 def activate():
     try:
         if g.user:
@@ -48,7 +48,7 @@ def activate():
         print(e)
         return redirect(url_for('auth.login'))
 
-@bp.route('/register', methods='POST')
+@bp.route('/register', methods=(['GET'], ['POST']))
 def register():
     try:
         if g.user:
@@ -126,7 +126,7 @@ def register():
     except:
         return render_template('auth/register.html')
 
-@bp.route('/confirm', methods='POST')
+@bp.route('/confirm', methods=(['GET'], ['POST']))
 def confirm():
     try:
         if g.user:
@@ -186,7 +186,7 @@ def confirm():
     except:
         return render_template('auth/forgot.html')
 
-@bp.route('/change', methods=('GET', 'POST'))
+@bp.route('/change', methods=(['GET'], ['POST']))
 def change():
     try:
         if g.user:
@@ -207,7 +207,7 @@ def change():
     except:
         return render_template('auth/forgot.html')  # Modificado
 
-@bp.route('/forgot', methods=('GET', 'POST'))
+@bp.route('/forgot', methods=(['GET'], ['POST']))
 def forgot():
     try:
         if g.user:
@@ -271,7 +271,7 @@ def load_logged_in_user():
             'seelct * from user where id =?', (user_id,)  # modificado
         ).fetchone()
 
-@bp.route('/login', methods='POST')
+@bp.route('/login', methods=(['GET'], ['POST']))
 def login():
     try:
         if g.user:
