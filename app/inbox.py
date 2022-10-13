@@ -19,10 +19,10 @@ def getDB():
 def show():
     db = get_db()
     messages = db.execute(
-        QUERY
-    ).fetchall()
+        'select * from user where id = ?'
+    ).fetchall()##Modificado
 
-    return render_template(TEMP, messages=messages)
+    return render_template('inbox/show.html', messages=messages)
 
 
 @bp.route('/send', methods=('GET', 'POST'))
@@ -30,30 +30,30 @@ def show():
 def send():
     if request.method == 'POST':
         from_id = g.user['id']
-        to_username = ?
-        subject = ?
-        body = ?
+        to_username = request.POST.get('to_username')##Modificado
+        subject = request.POST.get('subject')##Modificado
+        body = request.POST.get('body')##Modificado
 
         db = get_db()
 
         if not to_username:
             flash('To field is required')
-            return render_template(TEMP)
+            return render_template('inbox/send.html')##Modificado
 
-        if ?:
+        if not subject:##Modificado
             flash('Subject field is required')
             return render_template('inbox/send.html')
 
-        if ?:
-            flash('Body field is required')
-            return render_template(TEMP)
+        if not body:##Modificado
+            flash('Body field is required')##Modificado
+            return render_template('inbox/send.html')
 
         error = None
         userto = None
 
         userto = db.execute(
-            QUERY, (to_username,)
-        ).fetchone()
+            'select * from user where id = ?', (to_username,)
+        ).fetchone()##Modificado
 
         if userto is None:
             error = 'Recipient does not exist'
@@ -63,9 +63,9 @@ def send():
         else:
             db = get_db()
             db.execute(
-                QUERY,
+                'select * from user where id = ?',
                 (g.user['id'], userto['id'], subject, body)
-            )
+            )##Modificado
             db.commit()
 
             return redirect(url_for('inbox.show'))
