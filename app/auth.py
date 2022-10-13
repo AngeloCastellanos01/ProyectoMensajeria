@@ -165,7 +165,7 @@ def confirm():
                 'select * from forgotlink where challenge = ? and state = ? ', (authid, utils.F_ACTIVE)
             ).fetchone()  # Modificado
 
-            if attempt is not None:
+            if attempt is not None: 
                 db.execute(
                     'update forgotlink set state = ? where id = ?', (utils.F_INACTIVE,
                                                         attempt['id'])
