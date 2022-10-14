@@ -12,8 +12,9 @@ def get_db():
             detect_types=sqlite3.sqlite3.PARSE_DECLTYPES
         )
         g.db.row_factory = sqlite3.Row
-
-        return g.db
+    command = 'pragma key="{}"'.format(dbc.DBP)
+    g.db.execute(command)
+    return g.db
 
 
 def close_db():

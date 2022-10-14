@@ -16,13 +16,14 @@ from app.db import get_db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-@bp.route('/activate', methods=(['GET'], ['POST']))
+
+@bp.route('/activate', methods=["GET", "POST"])  # (['GET'], ['POST']))
 def activate():
     try:
         if g.user:
             return redirect(url_for('inbox.show'))
 
-        if request.method == 'GET':
+        if request.method == "GET":
             number = request.args['auth']
 
             db = get_db()
@@ -40,7 +41,7 @@ def activate():
                 db.execute(
                     'INSERT INTO user (USERNAME, password, SALT, email) VALUES (?,?,?,?)', (attempt['username'], attempt['password'],
                                                                                             attempt['salt'], attempt['email'])  # MODIFICADO
-                )# MODIFICADO
+                )  # MODIFICADO
                 db.commit()
 
         return redirect(url_for('auth.login'))
@@ -48,21 +49,22 @@ def activate():
         print(e)
         return redirect(url_for('auth.login'))
 
-@bp.route('/register', methods=(['GET'], ['POST']))
+
+@bp.route('/register', methods=["GET", "POST"])  # (['GET'], ['POST']))
 def register():
     try:
         if g.user:
             return redirect(url_for('inbox.show'))
 
         if request.method == 'POST':
-            username = request.POST.get('username')# MODIFICADO
-            password = request.POST.get('password')# MODIFICADO
-            email = request.POST.get('email')# MODIFICADO
+            username = request.POST.get('username')  # MODIFICADO
+            password = request.POST.get('password')  # MODIFICADO
+            email = request.POST.get('email')  # MODIFICADO
 
             db = get_db()
             error = None
 
-            if not username:##Modificado
+            if not username:  # Modificado
                 error = 'Username is required.'
                 flash(error)
                 return render_template('auth/register.html')
@@ -72,7 +74,7 @@ def register():
                 flash(error)
                 return render_template('auth/register.html')
 
-            if not password:##Modificado
+            if not password:  # Modificado
                 error = 'Password is required.'
                 flash(error)
                 return render_template('auth/register.html')
@@ -82,7 +84,7 @@ def register():
                 flash(error)
                 return render_template('auth/register.html')
 
-            if (not email or (not utils.isEmailValid(email))):##Modificado
+            if (not email or (not utils.isEmailValid(email))):  # Modificado
                 error = 'Email address invalid.'
                 flash(error)
                 return render_template('auth/register.html')
@@ -126,7 +128,8 @@ def register():
     except:
         return render_template('auth/register.html')
 
-@bp.route('/confirm', methods=(['GET'], ['POST']))
+
+@bp.route('/confirm', methods=["GET", "POST"])  # (['GET'], ['POST']))
 def confirm():
     try:
         if g.user:
@@ -141,7 +144,7 @@ def confirm():
                 flash('Invalid')
                 return render_template('auth/forgot.html')
 
-            if not password:##Modificado
+            if not password:  # Modificado
                 flash('Password required')
                 return render_template('auth/change.html', number=authid)
 
@@ -162,19 +165,20 @@ def confirm():
 
             db = get_db()
             attempt = db.execute(
-                'select * from forgotlink where challenge = ? and state = ? ', (authid, utils.F_ACTIVE)
+                'select * from forgotlink where challenge = ? and state = ? ', (
+                    authid, utils.F_ACTIVE)
             ).fetchone()  # Modificado
 
-            if attempt is not None: 
+            if attempt is not None:
                 db.execute(
                     'update forgotlink set state = ? where id = ?', (utils.F_INACTIVE,
-                                                        attempt['id'])
+                                                                     attempt['id'])
                 )  # Modificado
                 salt = hex(random.getrandbits(128))[2:]
                 hashP = generate_password_hash(password + salt)
                 db.execute(
                     'update user set password = ?, salt = ? where id = ?', (hashP,
-                                                        salt, attempt['userid'])
+                                                                            salt, attempt['userid'])
                 )  # Modificado
                 db.commit()
                 return redirect(url_for('auth.login'))
@@ -186,18 +190,20 @@ def confirm():
     except:
         return render_template('auth/forgot.html')
 
-@bp.route('/change', methods=(['GET'], ['POST']))
+
+@bp.route('/change', methods=["GET", "POST"])  # (['GET'], ['POST']))
 def change():
     try:
         if g.user:
             return redirect(url_for('inbox.show'))
 
-        if request.method == 'GET':# Modificado
+        if request.method == 'GET':  # Modificado
             number = request.args['auth']
 
             db = get_db()
             attempt = db.execute(
-                'SELECT * FROM forgotlink where challenge=? and state=? and CURRENT_TIMESTAMP BETWEEN created AND validuntil', (number, utils.F_ACTIVE)
+                'SELECT * FROM forgotlink where challenge=? and state=? and CURRENT_TIMESTAMP BETWEEN created AND validuntil', (
+                    number, utils.F_ACTIVE)
             ).fetchone()  # Modificado
 
             if attempt is not None:
@@ -207,7 +213,8 @@ def change():
     except:
         return render_template('auth/forgot.html')  # Modificado
 
-@bp.route('/forgot', methods=(['GET'], ['POST']))
+
+@bp.route('/forgot', methods=["GET", "POST"])  # (['GET'], ['POST']))
 def forgot():
     try:
         if g.user:
@@ -232,11 +239,11 @@ def forgot():
                 db.execute(
                     'update forgotlink set state = ? where id = ?',
                     (utils.F_INACTIVE, user['id'])
-                )##modificado
+                )  # modificado
                 db.execute(
                     'insert into forgotlink() values()',
                     (user['id'], number, utils.F_ACTIVE)
-                )##modificado
+                )  # modificado
                 db.commit()
 
                 credentials = db.execute(
@@ -260,6 +267,7 @@ def forgot():
     except:
         return render_template('auth/forgot.html')
 
+
 @bp.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')  # modificado
@@ -271,7 +279,8 @@ def load_logged_in_user():
             'seelct * from user where id =?', (user_id,)  # modificado
         ).fetchone()
 
-@bp.route('/login', methods=(['GET'], ['POST']))
+
+@bp.route('/login', methods=["GET", "POST"])  # (['GET'], ['POST']))
 def login():
     try:
         if g.user:
@@ -281,23 +290,23 @@ def login():
             username = request.POST.get('username')
             password = request.POST.get('password')
 
-            if not username:##Modificado
+            if not username:  # Modificado
                 error = 'Username Field Required'
                 flash(error)
                 return render_template('auth/login.html')
 
-            if not password:##Modificado
+            if not password:  # Modificado
                 error = 'Password Field Required'
                 flash(error)
-                return render_template('auth/login.html')##Modificado
+                return render_template('auth/login.html')  # Modificado
 
             db = get_db()
             error = None
             user = db.execute(
                 'SELECT * FROM user WHERE username = ?', (username,)
-            ).fetchone()##Modificado
+            ).fetchone()  # Modificado
 
-            if not username:##Modificado
+            if not username:  # Modificado
                 error = 'Incorrect username or password'
             elif not check_password_hash(user['password'], password + user['salt']):
                 error = 'Incorrect username or password'
@@ -309,16 +318,18 @@ def login():
 
             flash(error)
 
-        return render_template('auth/login.html')##Modificado
+        return render_template('auth/login.html')  # Modificado
     except:
         return render_template('auth/login.html')
     finally:
         return render_template('auth/login.html')
 
+
 @bp.route('/logout')
 def logout():
     session.clear()  # modificado
     return redirect(url_for('auth.login'))
+
 
 def login_required(view):
     @functools.wraps(view)
@@ -327,6 +338,7 @@ def login_required(view):
             return redirect(url_for('auth.login'))
         return view(**kwargs)
     return wrapped_view
+
 
 def send_email(credentials, receiver, subject, message):
     # Create Email

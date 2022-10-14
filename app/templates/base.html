@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}{% endblock %} - Myapp</title>
     <link
@@ -15,7 +14,7 @@
     <nav class="rounded-t-md prose">
       <h1 class="m-0 ml-1">Demo</h1>
       <ol class="m-0">
-      {% if g.user %}
+        {% if g.user %}
         <li><span>{{ g.user['username'] }}</span></li>
         <li><a href="{{ url_for('auth.logout') }}">Logout</a> {% else %}</li>
 

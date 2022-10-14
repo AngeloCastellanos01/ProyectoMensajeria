@@ -25,7 +25,7 @@ def show():
     return render_template('inbox/show.html', messages=messages)
 
 
-@bp.route('/send', methods=('GET', 'POST'))
+@bp.route('/send', methods=["GET", "POST"])#(['GET'], ['POST']))
 @login_required
 def send():
     if request.method == 'POST':
